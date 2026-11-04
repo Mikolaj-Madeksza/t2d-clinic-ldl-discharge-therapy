@@ -1,0 +1,81 @@
+table,variable,type,definition,values_or_units
+encounters,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+encounters,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+encounters,clinic,string,Responsible clinic,Endocrinology; Diabetology
+encounters,admission_date,date,Admission calendar date,ISO date
+encounters,discharge_date,date,Discharge calendar date,ISO date
+encounters,hospitalization_status,string,Admission completion status,discharged required
+encounters,sex,string,Sex used for cohort summary and eGFR,female; male
+encounters,age_at_admission_min_years,number,Minimum completed age based on birth year,years; at least 18 required
+encounters,age_at_admission_calendar_years,number,Admission year minus birth year,years
+encounters,discharge_medication_context,string,Availability of a discharge medication list,discharge_recommendation; unavailable
+encounters,calculated_bmi_kg_m2,number,Encounter BMI calculated from height and weight; first choice,kg/m²; nullable
+encounters,documented_bmi_kg_m2,number,Documented encounter BMI; third choice,kg/m²; nullable
+diagnoses,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+diagnoses,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+diagnoses,diagnosis_record_id,string,Diagnosis record identifier,SYNTHETIC- prefix
+diagnoses,icd10_code,string,Diagnostic code; also searched within diagnosis text,ICD-10; nullable
+diagnoses,diagnosis_label,string,Diagnosis wording; generic authored text in examples,See code_lists.csv and derive.py
+clinical_history,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+clinical_history,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+clinical_history,history_record_id,string,History record identifier,SYNTHETIC- prefix
+clinical_history,concept,string,Structured history concept,pregnancy identifies pregnancy exclusions
+clinical_history,icd10_code,string,Diagnostic code; also searched within diagnosis text,ICD-10; nullable
+clinical_history,concept_label_source,string,History wording; generic authored text in examples,See code_lists.csv and derive.py
+clinical_history,assertion,string,Upstream assertion classification; only present qualifies,present; explicitly_absent; unclear
+labs,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+labs,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+labs,analyte,string,Normalized analyte name,ldl_cholesterol_mg_dl; total_cholesterol_mg_dl; hdl_cholesterol_mg_dl; triglycerides_mg_dl; hba1c_percent; serum_creatinine_mg_dl
+labs,value,number,Parsed numeric laboratory value,Positive exact value required
+labs,unit,string,Normalized laboratory unit,mg/dL; % for HbA1c
+labs,collected_at,datetime,Collection time; preferred selection time,ISO datetime; nullable
+labs,executed_at,datetime,Execution time; fallback selection time and discharge check,ISO datetime; required
+labs,encounter_link_status,string,Whether source record is linked to the admission,linked required
+labs,result_status,string,Result parsing status,parsed required
+labs,comparison_operator,string,Laboratory comparison operator,Equality or missing treated as exact; inequalities excluded
+labs,lab_result_id,string,Unique laboratory record identifier; final selection tie-breaker,SYNTHETIC- prefix
+measurements,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+measurements,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+measurements,measurement,string,Measurement type,body_mass_index
+measurements,value_numeric,number,Numeric BMI measurement,kg/m²; nullable
+measurements,value_quality_status,string,Upstream measurement plausibility flag,plausible required
+measurements,encounter_link_status,string,Whether source record is linked to the admission,linked required
+measurements,measured_at,datetime,Measurement time; must be within admission dates,ISO datetime
+medications,encounter_study_id,string,Hospitalization identifier; links tables,SYNTHETIC- prefix in examples
+medications,patient_study_id,string,Patient identifier; repeated admissions share this value,SYNTHETIC- prefix in examples
+medications,ingredient,string,Normalized active ingredient or ingredients,nullable
+medications,statin_ingredient,string,Confirmed statin component,atorvastatin; rosuvastatin; other statin; null if none
+medications,statin_daily_dose_mg,number,Daily dose of the statin component; not total combination-product strength,mg/day; nullable
+medications,statin_dose_analysis_eligible,boolean,Upstream flag indicating a usable daily statin dose,True; False
+medications,statin_regimen_ambiguity,boolean,Unresolved statin regimen or dose conflict,True causes unknown intensity
+medications,lipid_product_type,string,Upstream lipid-product classification,single_statin; single_ezetimibe; statin_ezetimibe_combination; ambiguous_statin_product; other
+medications,medication_class,string,Normalized medication class; supplements fibrate ingredient matching,fibrate; other
+medications,medication_context,string,Context of medication mention,discharge_recommendation required
+medications,discharge_exposure_eligible,boolean,Upstream eligibility for active discharge exposure,True required
+medications,medication_use_status,string,Upstream treatment status,stopped; temporarily_held; replaced; reference_only; conditional_replacement are ineligible
+derived,year,integer,Admission year,2017–2026
+derived,period,string,Historical or contemporary admission period,2017–2022; 2023–September 2026
+derived,age,number,Calendar-year age,years
+derived,ascvd,boolean,Qualifying affirmative ASCVD evidence in this admission,See code_lists.csv
+derived,ascvd_group,string,ASCVD display group,Documented ASCVD; No documented ASCVD
+derived,ldl,number,First eligible inpatient LDL-C,mg/dL; nullable
+derived,ldl_band,category,Primary LDL-C band; lower limit included,<55; 55–<70; 70–<100; ≥100
+derived,ldl_mean,number,Mean of eligible inpatient LDL-C measurements,mg/dL
+derived,ldl_without_high_tg,number,First LDL-C remaining after excluding same-time TG ≥400,mg/dL
+derived,ldl_paired_tg,number,Maximum eligible TG at the same time as primary LDL-C,mg/dL; nullable
+derived,tc_mean; hdl_mean; tg_mean,number,Admission means of eligible total cholesterol; HDL-C; triglycerides,mg/dL
+derived,non_hdl,number,Mean total cholesterol minus HDL-C from same-time pairs,mg/dL
+derived,hba1c,number,First eligible inpatient HbA1c,%
+derived,creatinine,number,Last eligible inpatient creatinine,mg/dL
+derived,egfr,number,2021 CKD-EPI creatinine equation using age and sex,mL/min/1.73 m²
+derived,bmi,number,Calculated BMI; mean eligible measured BMI; documented BMI,kg/m²
+derived,regimen_available,boolean,Discharge medication list available,True; False
+derived,statin; ezetimibe; fibrate; pcsk9; bempedoic,boolean,Confirmed eligible discharge recommendation for each drug class,True; False
+derived,uncertain_product,boolean,Unresolved statin combination-product ingredients,True; False
+derived,regimen,category,Mutually exclusive treatment classification,Four named regimens; Uncertain regimen; Unavailable
+derived,intensity,category,Discharge statin intensity; any unresolved statin dose takes precedence,High; Non-high; Unknown; No statin; Unavailable
+derived,statin_combination,boolean,Classified statin plus ezetimibe regimen,True; False
+derived,high_statin,boolean,Known high-intensity statin recommendation,True; False
+derived,unknown_intensity,boolean,Confirmed statin with unknown intensity,True; False
+derived,high_statin_ezetimibe,boolean,High-intensity statin plus ezetimibe,True; False
+derived,statin_conflict,boolean,At least one active statin has an upstream ambiguity flag,True; False

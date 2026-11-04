@@ -1,0 +1,12 @@
+# Only these reviewed source and documentation files may be tracked.
+*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/requirements.txt
+!/derive.py
+!/run_analysis.py
+!/mock_data.py
+!/validate.py
+!/variable_dictionary.csv
+!/code_lists.csv

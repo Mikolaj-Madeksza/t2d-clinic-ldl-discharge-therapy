@@ -1,0 +1,16 @@
+classification,codes_or_fields,level,rule
+Source cohort,E11 and subcodes,Hospitalization,Any diagnosis position in the hospital AMMS source system; study clinics and dates were selected upstream.
+Diabetes type review,E10 coding plus clinical documentation,Patient,"Exclude all admissions for documented type 1 diabetes or LADA, including mixed T1D/T2D documentation. Exclude E10-only coding without documented diabetes type. Retain explicitly documented T2D despite E10 conflict unless another exclusion applies."
+Secondary diabetes,Explicit secondary diabetes in clinical documentation,Patient,Exclude explicitly documented secondary diabetes. Do not infer diabetes type from insulin treatment alone. This review preceded the analysis extract.
+Adult completed admission,hospitalization_status; age_at_admission_min_years,Hospitalization,Require discharged status and minimum age of 18 years.
+Pregnancy,concept=pregnancy; assertion=present,Hospitalization,Exclude positively documented admission-linked pregnancy.
+Coronary ASCVD,I20–I25; Z95.1; Z95.5,Hospitalization,"Code or affirmative wording of coronary disease, myocardial infarction or coronary revascularization."
+Cerebrovascular ASCVD,I63; I65; I66; I69.3; G45 except G45.4,Hospitalization,Code or affirmative wording of ischemic stroke or transient ischemic attack.
+Peripheral arterial ASCVD,I70.2,Hospitalization,"Code or affirmative wording of limb atherosclerosis, ischemia or revascularization."
+ASCVD evidence,Three-character ICD-10 categories include subcodes,Hospitalization,"Use same-admission diagnosis and history records. History assertion must be present. Exclude wording matching suspected, ruled out, no features or not found; see Polish expressions in derive.py. Past disease qualifies. No carry-forward between admissions."
+Insufficient ASCVD evidence,I64; G45.4; hemorrhagic stroke; nonspecific atherosclerosis,Hospitalization,Insufficient without separate qualifying ASCVD evidence. A stent without a qualifying vascular territory is insufficient.
+LDL bands,55; 70; 100 mg/dL,Eligible laboratory result,First eligible inpatient LDL; lower limits included. Exact numeric values only.
+High-TG sensitivity,TG ≥400 mg/dL,Same admission and recorded timestamp,Remove paired LDL records before selecting first remaining LDL. Unmatched TG retains LDL. This does not establish the LDL assay method.
+Discharge medication,discharge_exposure_eligible; medication_context,Medication record,"Require an available discharge list, exposure eligible=True and discharge_recommendation context. Upstream parsing determines active exposure and component-dose eligibility."
+High-intensity statin,atorvastatin 40–80; rosuvastatin 20–40 mg/day,Hospitalization,"Use statin component daily dose. Missing dose, ineligible dose or statin-regimen ambiguity causes unknown intensity."
+Uncertain combination,ambiguous_statin_product,Hospitalization,Keep confirmed statin in any-statin and unknown-intensity counts. Do not assign an uncertain ezetimibe product to one of the four plotted regimens.
